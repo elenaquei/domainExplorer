@@ -1,4 +1,5 @@
-Domain Explorer: sampling a domain
+**Domain Explorer: sampling a domain**
+Library by Elena Queirolo and Kevin M. Church
 
 In this library we look at sampling a "hard" domain and testing that the sample has indeed covered the domain of interest.
 
