@@ -2,6 +2,7 @@ using Polynomials, TaylorSeries, ForwardDiff, LinearAlgebra
 using Random, Distributions, Interpolations
 using Plots
 
+# Global paramter below is only used for the example boundary functions
 epsilon = 0.5
 
 function ray(t,x₀,v)
@@ -11,6 +12,7 @@ end
 function bbox_zeros(f;order=64)
     # Calculate all zeros of a vector-valued black-box function f of a single variable, assumed to be a polynomial up to some order.
     # f must be implemented with differentiable code.
+    # COMMENT: This could be done without the use of e.g. TaylorSeries.jl. We could just interpolate f to get the polynomial representation instead. Only doing this because TaylorSeries.jl will give exact results pretty quickly, and I am lazy.
     p = taylor_expand(f,order=order)
     r = Array{Vector{ComplexF64}}(undef,length(p))
     for n in axes(r,1)
@@ -86,7 +88,7 @@ function collision(x₀,v;g=myboundary,tolerance=1E-16,poly_order=64)
 end
 
 function get_new_direction(x₀,boundary_index;g=myboundary)
-    differential = ForwardDiff.jacobian(g,x₀)
+    differential = ForwardDiff.jacobian(g,x₀)    # This is the only other part of the pipeline that requires the boundary function to be implemented with differentiable code. If we are willing to sacrifice a bit on rigour, we could just sample the hypersphere to get S like now, and do a check that all( g(x₀+tS) .< 0 ) for t>0 small enough, and if true, return S. 
     gradient = differential[boundary_index,:]
     S = sample_hypersphere(length(x₀))
     if dot(S,gradient)<0
